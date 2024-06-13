@@ -1,0 +1,55 @@
+{
+    "clientName": "Thunder Client",
+    "collectionName": "tcc",
+    "collectionId": "d1018974-6137-46d9-be84-dbb55744980f",
+    "dateExported": "2024-06-13T00:17:12.501Z",
+    "version": "1.2",
+    "folders": [
+        {
+            "_id": "722982c3-9984-4f9e-b964-629823f9564a",
+            "name": "usuarios",
+            "containerId": "",
+            "created": "2024-06-13T00:16:21.005Z",
+            "sortNum": 10000
+        },
+        {
+            "_id": "5dd152a0-ebde-416f-bb94-f2cc3f0ebba5",
+            "name": "produtos",
+            "containerId": "",
+            "created": "2024-06-13T00:16:50.469Z",
+            "sortNum": 20000
+        }
+    ],
+    "requests": [
+        {
+            "_id": "81de1dbf-53be-4305-87a4-7ba00025252a",
+            "colId": "d1018974-6137-46d9-be84-dbb55744980f",
+            "containerId": "722982c3-9984-4f9e-b964-629823f9564a",
+            "name": "Login",
+            "url": "http://localhost:3333/usuarios/login",
+            "method": "POST",
+            "sortNum": 10000,
+            "created": "2024-06-12T23:48:22.609Z",
+            "modified": "2024-06-13T00:16:06.552Z",
+            "headers": [],
+            "body": {
+                "type": "json",
+                "raw": "{\n  \"usu_email\": \"reynaldo@gmail.com\", \n  \"usu_senha\": \"1234\"\n}",
+                "form": []
+            }
+        },
+        {
+            "_id": "8315aa41-4036-4cca-874b-99760496a361",
+            "colId": "d1018974-6137-46d9-be84-dbb55744980f",
+            "containerId": "722982c3-9984-4f9e-b964-629823f9564a",
+            "name": "listar",
+            "url": "http://localhost:3333/usuarios",
+            "method": "GET",
+            "sortNum": 20000,
+            "created": "2024-06-13T00:12:35.419Z",
+            "modified": "2024-06-13T00:12:54.883Z",
+            "headers": []
+        }
+    ],
+    "ref": "EUG0r-MExlmX1Za9uknt-wID25y_e9n6sozNKJMF-sMjuvPHKh652q3F4HKjiimAN7JCLAHWL4TEA8u0J4N54g"
+}
