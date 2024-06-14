@@ -1,19 +1,25 @@
 const db = require('../database/connection');
 
 module.exports = {
-    async listarEnderecos(request, response) {
+    async listarPagamentosCompras(request, response) {
         try {
             // instruções SQL
-            const sql = `SELECT * FROM bd_tcc_tecdes_223_g5.enderecos; `;
+            const sql = `SELECT * FROM bd_tcc_tecdes_223_g5.pagamentos_compras; `;
             // executa instruções SQL e armazena o resultado na variável usuários
-            const enderecos = await db.query(sql);
+            const pagamentos_compras = await db.query(sql);
             // armazena em uma variável o número de registros retornados
-            const nItens = enderecos[0].length;
+            const nItens = pagamentos_compras[0].length;
+            // Formatando a data para cada compra
+            const dados = pagamentos_compras[0].map(item => ({
+                ...item,
+                pag_comp_valor: parseFloat(item.pag_comp_valor).toFixed(2)
+            }));
+
     
             return response.status(200).json({
                 sucesso: true,
-                mensagem: 'Lista de usuários.',
-                dados: enderecos[0],
+                mensagem: 'Lista de PagamentosCompras.',
+                dados: dados,
                 nItens
             });
         } catch (error) {
@@ -25,25 +31,25 @@ module.exports = {
         }
     },
     
-    async cadastrarEnderecos(request, response) {
+    async cadastrarPagamentosCompras(request, response) {
         try {
             // parâmetros recebidos no corpo da requisição
-            const { end_logradouro, end_bairro, end_cidade, end_estado, end_cep} = request.body;
+            const { pag_comp_valor, tpa_cod} = request.body;
             // instrução SQL
-            const sql = `INSERT INTO enderecos
-                (end_logradouro, end_bairro, end_cidade, end_estado, end_cep) 
-                VALUES (?, ?, ?, ?, ?)`;
+            const sql = `INSERT INTO pagamentos_compras 
+                (pag_comp_valor, tpa_cod) 
+                VALUES (?, ?)`;
             // definição dos dados a serem inseridos em um array
-            const values = [end_logradouro, end_bairro, end_cidade, end_estado, end_cep];
+            const values = [pag_comp_valor, tpa_cod];
             // execução da instrução sql passando os parâmetros
             const execSql = await db.query(sql, values);
             // identificação do ID do registro inserido
-            const end_id = execSql[0].insertId;
+            const pag_comp_id = execSql[0].insertId;
 
             return response.status(200).json({
                 sucesso: true,
                 mensagem: 'Cadastro de usuário efetuado com sucesso.',
-                dados: end_id
+                dados: pag_comp_id
                 //mensSql: execSql
             });
         } catch (error) {
@@ -54,25 +60,24 @@ module.exports = {
             });
         }
     },
-    async editarEnderecos(request, response) {
+    async editarPagamentosCompras(request, response) {
         try {
             // parâmetros recebidos pelo corpo da requisição
-            const { end_logradouro, end_bairro,end_cidade, end_estado, end_cep} = request.body;
+            const { pag_comp_valor, tpa_cod } = request.body;
             // parâmetro recebido pela URL via params ex: /usuario/1
-            const { end_id } = request.params;
+            const { pag_comp_id } = request.params;
             // instruções SQL
-           
-            const sql = `UPDATE enderecos SET end_logradouro = ?, end_bairro = ?, 
-            end_cidade = ?, end_estado = ?,  end_cep = ?
-                 WHERE end_id = ?`;
+            const sql = `UPDATE pagamentos_compras SET pag_comp_valor = ?, tpa_cod = ?, 
+                 WHERE pag_comp_id = ?;
+                 `;
             // preparo do array com dados que serão atualizados
-            const values = [end_logradouro, end_bairro, end_cidade, end_estado, end_cep,end_id];
+            const values = [pag_comp_valor, tpa_cod, pag_comp_id];
             // execução e obtenção de confirmação da atualização realizada
             const atualizaDados = await db.query(sql, values);
 
             return response.status(200).json({
                 sucesso: true, 
-                mensagem: `Endereços ${end_id} atualizado com sucesso!`,
+                mensagem: `Pagamentos_Compras ${pag_comp_id} atualizado com sucesso!`,
                 dados: atualizaDados[0].affectedRows
                 // mensSql: atualizaDados
             });
@@ -84,20 +89,20 @@ module.exports = {
             });
         }
     },
-    async apagarEnderecos(request, response) {
+    async apagarPagamentosCompras(request, response) {
         try {
             // parâmetro passado via url na chamada da api pelo front-end
-            const { end_id } = request.params;
+            const { pag_comp_id } = request.params;
             // comando de exclusão
-            const sql = `DELETE FROM enderecos WHERE end_id = ?`;
+            const sql = `DELETE FROM pagamentos_compras WHERE pag_comp_id = ?`;
             // array com parâmetros da exclusão
-            const values = [end_id];
+            const values = [pag_comp_id];
             // executa instrução no banco de dados
             const excluir = await db.query(sql, values);
 
             return response.status(200).json({
                 sucesso: true,
-                mensagem: `Endereco ${end_id} excluído com sucesso`,
+                mensagem: `Pagamentos_Compras ${pag_comp_id} excluído com sucesso`,
                 dados: excluir[0].affectedRows
             });
         } catch (error) {
@@ -108,7 +113,7 @@ module.exports = {
             });
         }
     }, 
-    async ocultarEnderecos(request, response) {
+    async ocultarUsuario(request, response) {
         try {
             const usu_ativo = false; 
             const { usu_id } = request.params; 
@@ -132,17 +137,24 @@ module.exports = {
     }, 
     async login(request, response) {
         try {
-
             const { usu_email, usu_senha } = request.body;
-
-            const sql = `SELECT usu_id, usu_nome, tus_cod FROM usuarios 
-                WHERE usu_email = ? AND usu_senha = ?`;
-
+    
+            const sql = `SELECT usu_id, usu_nome, usu_sexo, usu_data_nascimento, usu_data_cadastro, tus_cod FROM usuarios 
+                         WHERE usu_email = ? AND usu_senha = ?`;
+    
             const values = [usu_email, usu_senha];
-
+    
             const usuarios = await db.query(sql, values);
             const nItens = usuarios[0].length; 
 
+            const dadosFormatados = usuarios[0].map(usuario => {
+                return {
+                    ...usuario,
+                    usu_data_nascimento: usuario.usu_data_nascimento.toISOString().split('T')[0],
+                    usu_data_cadastro: usuario.usu_data_cadastro.toISOString().split('T')[0]
+                };
+            });
+    
             if (nItens < 1) {
                 return response.status(403).json({
                     sucesso: false,
@@ -150,11 +162,11 @@ module.exports = {
                     dados: null,
                 });
             }
-
+    
             return response.status(200).json({
                 sucesso: true,
                 mensagem: 'Login efetuado com sucesso',
-                dados: usuarios[0]
+                dados: dadosFormatados
             });
         } catch (error) {
             return response.status(500).json({
@@ -164,5 +176,6 @@ module.exports = {
             });
         }
     },
+    
 }
 
