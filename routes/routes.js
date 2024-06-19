@@ -12,7 +12,7 @@ const ComprasController = require('../controllers/compras');
 const EnderecoController = require('../controllers/endereco');
 const UsuarioEndController = require('../controllers/usuarioendereco');
 const Pagamento_comprasController = require('../controllers/pagamentos_compras');
-
+const entrada_produtoController = require('../controllers/entrada_produto');
 
 //Usuarios
 
@@ -95,6 +95,10 @@ router.patch('/pagamentos_compras/:pag_comp_id',Pagamento_comprasController.edit
 router.delete('/pagamentos_compras/:pag_comp_id',Pagamento_comprasController.apagarPagamentosCompras); // params (URL)
 //router.delete('/produtos/del/:prod_id',ProdutosController.apagarTipoUsuario); // params (URL)
 
-
+router.get('/entrada_produto',entrada_produtoController.listarEntradaProduto);
+router.post('/entrada_produto',entrada_produtoController.cadastrarEntradaProduto); //body
+router.patch('/entrada_produto/:ent_prod_id',entrada_produtoController.editarEntradaProduto); // params (URL) e body 
+router.delete('/entrada_produto/:ent_prod_id',entrada_produtoController.apagarEntradaProduto); // params (URL)
+//router.delete('/produtos/del/:prod_id',ProdutosController.apagarTipoUsuario); // params (URL)
 
 module.exports = router;

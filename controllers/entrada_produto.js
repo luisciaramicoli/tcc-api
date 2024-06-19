@@ -1,24 +1,23 @@
 const db = require('../database/connection');
 
 module.exports = {
-    async listarPagamentosCompras(request, response) {
+    async listarEntradaProduto(request, response) {
         try {
             // instruções SQL
-            const sql = `SELECT * FROM bd_tcc_tecdes_223_g5.pagamentos_compras; `;
+            const sql = `SELECT * FROM bd_tcc_tecdes_223_g5.entrada_produto;`;
             // executa instruções SQL e armazena o resultado na variável usuários
-            const pagamentos_compras = await db.query(sql);
+            const entrada_produto = await db.query(sql);
             // armazena em uma variável o número de registros retornados
-            const nItens = pagamentos_compras[0].length;
-            // Formatando a data para cada compra
-            const dados = pagamentos_compras[0].map(item => ({
+            const nItens = entrada_produto[0].length;
+    
+            const dados = entrada_produto[0].map(item => ({
                 ...item,
-                pag_comp_valor: parseFloat(item.pag_comp_valor).toFixed(2)
+                ent_prod_qtd: parseFloat(item.ent_prod_qtd).toFixed(2)
             }));
 
-    
             return response.status(200).json({
                 sucesso: true,
-                mensagem: 'Lista de PagamentosCompras.',
+                mensagem: 'Lista de usuários.',
                 dados: dados,
                 nItens
             });
@@ -31,25 +30,25 @@ module.exports = {
         }
     },
     
-    async cadastrarPagamentosCompras(request, response) {
+    async cadastrarEntradaProduto(request, response) {
         try {
             // parâmetros recebidos no corpo da requisição
-            const { pag_comp_valor, tpa_cod} = request.body;
+            const { ent_prod_qtd, ent_prod_preco,comp_id,prod_id } = request.body;
             // instrução SQL
-            const sql = `INSERT INTO pagamentos_compras 
-                (pag_comp_valor, tpa_cod) 
-                VALUES (?, ?)`;
+            const sql = `INSERT INTO entrada_produto 
+                (ent_prod_qtd, ent_prod_preco,comp_id,prod_id) 
+                VALUES (?, ?,?,? )`;
             // definição dos dados a serem inseridos em um array
-            const values = [pag_comp_valor, tpa_cod];
+            const values = [ent_prod_qtd, ent_prod_preco,comp_id,prod_id];
             // execução da instrução sql passando os parâmetros
             const execSql = await db.query(sql, values);
             // identificação do ID do registro inserido
-            const pag_comp_id = execSql[0].insertId;
+            const ent_prod_id = execSql[0].insertId;
 
             return response.status(200).json({
                 sucesso: true,
                 mensagem: 'Cadastro de usuário efetuado com sucesso.',
-                dados: pag_comp_id
+                dados: ent_prod_id
                 //mensSql: execSql
             });
         } catch (error) {
@@ -60,23 +59,23 @@ module.exports = {
             });
         }
     },
-    async editarPagamentosCompras(request, response) {
+    async editarEntradaProduto(request, response) {
         try {
             // parâmetros recebidos pelo corpo da requisição
-            const { pag_comp_valor } = request.body;
+            const { ent_prod_qtd, ent_prod_preco, comp_id, prod_id } = request.body;
             // parâmetro recebido pela URL via params ex: /usuario/1
-            const { pag_comp_id } = request.params;
+            const { ent_prod_id } = request.params;
             // instruções SQL
-            const sql = `UPDATE pagamentos_compras SET pag_comp_valor = ?
-                 WHERE pag_comp_id = ?;`;
+            const sql = `UPDATE entrada_produto SET ent_prod_qtd = ?, ent_prod_preco = ?, 
+            Comp_id = ?, Prod_id = ? WHERE ent_prod_id = ?; `;
             // preparo do array com dados que serão atualizados
-            const values = [pag_comp_valor, pag_comp_id];
+            const values = [ent_prod_qtd, ent_prod_preco, comp_id, prod_id, ent_prod_id];
             // execução e obtenção de confirmação da atualização realizada
             const atualizaDados = await db.query(sql, values);
 
             return response.status(200).json({
                 sucesso: true, 
-                mensagem: `Pagamentos_Compras ${pag_comp_id} atualizado com sucesso!`,
+                mensagem: `Usuário ${ent_prod_id} atualizado com sucesso!`,
                 dados: atualizaDados[0].affectedRows
                 // mensSql: atualizaDados
             });
@@ -88,20 +87,20 @@ module.exports = {
             });
         }
     },
-    async apagarPagamentosCompras(request, response) {
+    async apagarEntradaProduto(request, response) {
         try {
             // parâmetro passado via url na chamada da api pelo front-end
-            const { pag_comp_id } = request.params;
+            const { ent_prod_id } = request.params;
             // comando de exclusão
-            const sql = `DELETE FROM pagamentos_compras WHERE pag_comp_id = ?`;
+            const sql = `DELETE FROM entrada_produto WHERE ent_prod_id = ?`;
             // array com parâmetros da exclusão
-            const values = [pag_comp_id];
+            const values = [ent_prod_id];
             // executa instrução no banco de dados
             const excluir = await db.query(sql, values);
 
             return response.status(200).json({
                 sucesso: true,
-                mensagem: `Pagamentos_Compras ${pag_comp_id} excluído com sucesso`,
+                mensagem: `Entrada Produto ${ent_prod_id} excluído com sucesso`,
                 dados: excluir[0].affectedRows
             });
         } catch (error) {
